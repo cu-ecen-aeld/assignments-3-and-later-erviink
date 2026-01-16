@@ -1,4 +1,12 @@
 #include "systemcalls.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h> //main posix header
+#include <sys/types.h> //pid_t
+#include <sys/wait.h> // wait()
+#include <stdbool.h> //boolean true, false
+#include <fcntl.h>  //open()
+
 
 /**
  * @param cmd the command to execute with system()
@@ -9,6 +17,7 @@
 */
 bool do_system(const char *cmd)
 {
+    bool ret;
 
 /*
  * TODO  add your code here
@@ -17,7 +26,15 @@ bool do_system(const char *cmd)
  *   or false() if it returned a failure
 */
 
-    return true;
+    int result = system(cmd);
+    if (result==0)
+	{
+	ret = true;
+	} else
+	{
+	ret= false;
+	}
+    return ret;
 }
 
 /**
@@ -45,9 +62,6 @@ bool do_exec(int count, ...)
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    command[count] = command[count];
 
 /*
  * TODO:
@@ -58,6 +72,20 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+pid_t forkpid = fork();
+if (forkpid == 0) //child
+{
+ int execret = execv(command[0], &command[1]);
+	if (execret== -1)
+	{
+		printf("execv call failed");
+	}
+}
+else
+{
+	wait(NULL);
+	printf("Execv call process finished");
+}
 
     va_end(args);
 
@@ -80,9 +108,16 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    command[count] = command[count];
+
+	int fd = open(outputfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+    
+	int execret = execv(command[0], &command[1]);
+	if (execret == -1)
+	{
+	printf("Execv call failed inside do_exec_redirect function");
+	}
 
 
 /*
