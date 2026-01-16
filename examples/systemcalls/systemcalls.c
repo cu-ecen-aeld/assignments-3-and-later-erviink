@@ -57,6 +57,9 @@ bool do_exec(int count, ...)
     va_start(args, count);
     char * command[count+1];
     int i;
+   bool retb;
+	int status;
+
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
@@ -78,18 +81,25 @@ if (forkpid == 0) //child
  int execret = execv(command[0], &command[1]);
 	if (execret== -1)
 	{
-		printf("execv call failed");
+		printf("execv call failed do exec");
 	}
+	exit(1);
 }
 else
 {
-	wait(NULL);
-	printf("Execv call process finished");
+
+
+        wait(&status);
+        if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 0))
+        {perror("ret true");retb = true;}
+        else
+        {perror("ret false"); retb = false;}
+
 }
 
     va_end(args);
 
-    return true;
+    return retb;
 }
 
 /**
@@ -103,22 +113,49 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     va_start(args, count);
     char * command[count+1];
     int i;
+    bool retb; 
+    int status;
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
 
-	int fd = open(outputfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	int fd = open(outputfile, O_WRONLY|O_CREAT, 0644);
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
-    
-	int execret = execv(command[0], &command[1]);
-	if (execret == -1)
-	{
-	printf("Execv call failed inside do_exec_redirect function");
-	}
 
+
+pid_t forkpid = fork();
+
+
+if (forkpid < 0) 
+{perror("fork failed");
+exit(1); //fork failed
+}
+
+if (forkpid == 0) //child
+{
+ int execret = execv(command[0], &command[1]);
+        if (execret== -1)
+        {
+                perror("execv call failed redirect");
+        }
+	exit(1);
+}
+else
+{
+
+        wait(&status);
+        if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 0))
+        {perror("ret true");retb = true;}
+        else
+        {perror("ret false"); retb = false;}
+}
+
+    va_end(args);
+
+    return retb;
 
 /*
  * TODO
@@ -128,7 +165,6 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
-    va_end(args);
 
-    return true;
+
 }
