@@ -78,7 +78,7 @@ bool do_exec(int count, ...)
 pid_t forkpid = fork();
 if (forkpid == 0) //child
 {
- int execret = execv(command[0], &command[1]);
+ int execret = execv(command[0], command);
 	if (execret== -1)
 	{
 		printf("execv call failed do exec");
@@ -121,27 +121,29 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     }
     command[count] = NULL;
 
-	int fd = open(outputfile, O_WRONLY|O_CREAT, 0644);
-	dup2(fd, STDOUT_FILENO);
-	close(fd);
 
+int fd = open(outputfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
 
 pid_t forkpid = fork();
 
 
 if (forkpid < 0) 
 {perror("fork failed");
-exit(1); //fork failed
+_exit(1); //fork failed
 }
 
 if (forkpid == 0) //child
 {
- int execret = execv(command[0], &command[1]);
+
+
+int execret = execv(command[0], command);
         if (execret== -1)
         {
-                perror("execv call failed redirect");
+                write(STDOUT_FILENO,"execv fail\n",11);
         }
-	exit(1);
+	_exit(1);
 }
 else
 {
