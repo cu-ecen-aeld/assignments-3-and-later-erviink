@@ -73,10 +73,9 @@ mkdir -p bin dev etc home lib lib64 proc sbin sys tmp usr var
 mkdir -p usr/bin usr/lib usr/sbin
 mkdir -p var/log home/conf 
 
-cd ${HOME}/Project/finder-app/conf
-sudo cp  assignment.txt ${OUTDIR}/rootfs/home/conf/
-echo "erviink" > ${OUTDIR}/rootfs/home/conf/username.txt
 
+echo "erviink" > ${OUTDIR}/rootfs/home/conf/username.txt
+echo "assignment3" > ${OUTDIR}/rootfs/home/conf/assignment.txt
 
 cd ${OUTDIR}/rootfs/
 
