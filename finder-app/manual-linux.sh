@@ -7,13 +7,6 @@
 set -e
 set -u
 
-GCCPATH="/home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc"
-if [ ! -d ${GCCPATH} ]; then
- echo "GCC folder not recognized. Fail. ${GCCPATH}"
- exit 1
-else 
- echo " PATH to g c c -  ${GCCPATH}"
-fi
 
 export PATH="$HOME/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin:$PATH"
 OUTDIR=/tmp/aeld
@@ -87,6 +80,11 @@ mkdir -p usr/bin usr/lib usr/sbin
 mkdir -p var/log home/conf 
 
 
+
+
+
+
+
 echo "erviink" > ${OUTDIR}/rootfs/home/conf/username.txt
 echo "assignment3" > ${OUTDIR}/rootfs/home/conf/assignment.txt
 
@@ -122,10 +120,11 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 #~/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc
 
-cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ./lib
-cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ./lib64
-cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ./lib64
-cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ./lib64
+#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ./lib
+#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ./lib64
+#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ./lib64
+#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ./lib64
+
 
 
 # TODO: Make device nodes
@@ -147,6 +146,10 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- writer
 # on the target rootfs
 
 cp writer writer.o finder.sh finder-test.sh autorun-qemu.sh  ${OUTDIR}/rootfs/home
+cp ./lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/lib
+cp ./lib/libm.so.6  ${OUTDIR}/rootfs/lib64
+cp ./lib/libresolv.so.2  ${OUTDIR}/rootfs/lib64
+cp ./lib/libc.so.6  ${OUTDIR}/rootfs/lib64
 
 #TODO: Chown the root directory - change owner files to root, recursively starting here
 #execute as super user, change owner mode recursively user owner:group owner
