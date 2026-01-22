@@ -1,3 +1,5 @@
+
+
 #!/bin/bash
 # Script outline to install and build kernel.
 # Author: Siddhant Jajoo.
@@ -56,6 +58,9 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
   make dtbs
 fi
 
+if [ ! -e ${OUTDIR}/Image ]; then
+  sudo cp ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ${OUTDIR} 
+fi
 
 echo "Creating the staging directory for the root filesystem"
 cd "$OUTDIR"
@@ -109,10 +114,10 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 #~/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc
 
-cp ${HOME}/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ./lib
-cp ${HOME}/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ./lib64
-cp ${HOME}/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ./lib64
-cp ${HOME}/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ./lib64
+cp /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ./lib
+cp /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ./lib64
+cp /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ./lib64
+cp /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ./lib64
 
 
 # TODO: Make device nodes
