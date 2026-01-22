@@ -17,6 +17,8 @@ FINDER_APP_DIR=$(realpath $(dirname $0))
 export ARCH=arm64
 export CROSS_COMPILE=aarch64-none-linux-gnu-
 
+SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot)
+
 if [ $# -lt 1 ]
 then
   echo "Using default directory ${OUTDIR} for output"
@@ -117,17 +119,8 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs, program inerpreter to /lib and  shared lib to /lib64
-
-#~/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc
-
-#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ./lib
-#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ./lib64
-#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ./lib64
-#cp -a /home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ./lib64
-
-
-
 # TODO: Make device nodes
+
 echo "Making device nodes\n"
 sudo mknod -m 666 dev/null c 1 3
 sudo mknod -m 666 dev/console c 5 1
@@ -146,10 +139,10 @@ make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- writer
 # on the target rootfs
 
 cp writer writer.o finder.sh finder-test.sh autorun-qemu.sh  ${OUTDIR}/rootfs/home
-cp ./lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/lib
-cp ./lib/libm.so.6  ${OUTDIR}/rootfs/lib64
-cp ./lib/libresolv.so.2  ${OUTDIR}/rootfs/lib64
-cp ./lib/libc.so.6  ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib/ld-linux-aarch64.so.1  ${OUTDIR}/rootfs/lib
+cp ${SYSROOT}/lib64/libm.so.6  ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libresolv.so.2  ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libc.so.6  ${OUTDIR}/rootfs/lib64
 
 #TODO: Chown the root directory - change owner files to root, recursively starting here
 #execute as super user, change owner mode recursively user owner:group owner
