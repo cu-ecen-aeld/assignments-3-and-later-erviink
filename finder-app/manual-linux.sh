@@ -7,11 +7,12 @@
 set -e
 set -u
 
-GCC = "/home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc"
-if [-d ${GCC}]; then
-echo "GCC folder not recognized. Fail. ${GCC}"
-exit 1
-
+GCCPATH="/home/ekap/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc"
+if [ ! -d ${GCCPATH} ]; then
+ echo "GCC folder not recognized. Fail. ${GCC}"
+ exit 1
+else 
+ echo " PATH to g c c -  ${GCCPATH}"
 fi
 
 export PATH="$HOME/gcc-arm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin:$PATH"
